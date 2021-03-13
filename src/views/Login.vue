@@ -253,6 +253,7 @@ export default {
         color: #606266;
         font-size: 24px;
         margin-bottom: 30px;
+        text-align: center;
       }
       .code-box {
         background-color: #fff;
