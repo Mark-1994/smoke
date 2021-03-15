@@ -1,6 +1,29 @@
 <template>
   <div class="home">
-    <Layout>
+    <div :style="{ position: 'fixed', backgroundColor: '#464c59', top: '0', left: '0', zIndex: 999, color: '#fff', width: '100%', textAlign: 'center', lineHeight: '36px' }" v-if="!isRealName">
+      <Icon type="ios-warning" color="#f83" />
+      为保证您的账户及资源的安全，建议您优先完成实名认证。
+      <Button type="text" ghost :style="{ color: '#39f' }" @click="goCertification">去认证</Button>
+      <Modal
+        v-model="modal1"
+        title="代理三要素认证"
+        @on-ok="ok('formInline')"
+        @on-cancel="cancel">
+        <div :style="{ border: '1px solid #5e7ce0', backgroundColor: '#f2f5fc', boxShadow: '0 1px 3px 0 rgb(70 94 184 / 25%)', padding: '6px 8px' }">
+          <Icon type="md-alert" color="#5e7ce0" />
+          个人证件信息仅用于实名认证，不会泄露您的任何证件信息。
+        </div>
+        <Form ref="formInline" :model="formInline" :rules="ruleInline" hide-required-mark label-colon>
+          <FormItem label="姓名" prop="name">
+            <Input type="text" v-model="formInline.name" placeholder="姓名"></Input>
+          </FormItem>
+          <FormItem label="身份证号" prop="id">
+            <Input type="text" v-model="formInline.id" placeholder="身份证号"></Input>
+          </FormItem>
+        </Form>
+      </Modal>
+    </div>
+    <Layout :style="!isRealName ? { paddingTop: '36px' } : {}">
       <Sider
         ref="side1"
         hide-trigger
@@ -14,20 +37,19 @@
           </a>
         </div>
         <Menu
-          active-name="1-1"
           theme="dark"
           width="auto"
           :class="menuitemClasses"
         >
-          <MenuItem name="1-1" to="users">
-            <Icon type="ios-navigate"></Icon>
+          <MenuItem name="1-1" to="link">
+            <Icon type="ios-link"></Icon>
             <span>链接列表</span>
           </MenuItem>
           <MenuItem name="2-1" to="record">
-            <Icon type="ios-navigate"></Icon>
+            <Icon type="ios-list-box-outline"></Icon>
             <span>充值记录</span>
           </MenuItem>
-          <Submenu name="6">
+          <!-- <Submenu name="6">
             <template slot="title">
               <Icon type="ios-keypad"></Icon>
               Item 2
@@ -44,7 +66,7 @@
               <Icon type="ios-settings"></Icon>
               <span>链接列表3</span>
             </MenuItem>
-          </Submenu>
+          </Submenu> -->
         </Menu>
       </Sider>
       <Layout>
@@ -65,31 +87,31 @@
                 placement="bottom-end"
                 @on-click="getNavEvent">
                 <a href="javascript:void(0)">
-                    <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
-                    Aresn
+                  <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+                  {{ userinfo.nick_name }}
                 </a>
                 <DropdownMenu slot="list">
-                    <DropdownItem name="personal">
-                      <Icon type="ios-contact-outline" />
-                      个人中心
-                    </DropdownItem>
-                    <DropdownItem name="setting">
-                      <Icon type="ios-settings-outline" />
-                      设置
-                    </DropdownItem>
-                    <DropdownItem divided name="logout">
-                      <Icon type="ios-log-out"></Icon>
-                      退出登录
-                    </DropdownItem>
+                  <DropdownItem name="personal">
+                    <Icon type="ios-contact-outline" />
+                    个人中心
+                  </DropdownItem>
+                  <DropdownItem name="setting">
+                    <Icon type="ios-settings-outline" />
+                    设置
+                  </DropdownItem>
+                  <DropdownItem divided name="logout">
+                    <Icon type="ios-log-out"></Icon>
+                    退出登录
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </Col>
           </Row>
         </Header>
         <Content
-          :style="{ margin: '20px', background: '#fff', minHeight: '260px', padding: '16px' }"
+          :style="{ margin: '20px', background: '#fff', padding: '16px' }"
         >
-          <router-view/>
+          <router-view @getChildVal="getChildVal" />
         </Content>
       </Layout>
     </Layout>
@@ -101,7 +123,23 @@ export default {
   name: 'Home',
   data () {
     return {
-      isCollapsed: false
+      isCollapsed: false,
+      modal1: false,
+      formInline: {
+        name: '',
+        id: ''
+      },
+      ruleInline: {
+        name: [
+          { required: true, message: '请填写姓名', trigger: 'blur' }
+        ],
+        id: [
+          { required: true, message: '请填写身份证号', trigger: 'blur' },
+          { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '身份证号格式不正确', trigger: 'blur' }
+        ]
+      },
+      isRealName: false,
+      userinfo: window.localStorage.getItem('usersInfo') ? JSON.parse(window.localStorage.getItem('usersInfo')) : {}
     }
   },
   computed: {
@@ -119,7 +157,31 @@ export default {
     getNavEvent (name) {
       if (name === 'logout') {
         this.$router.push('/login')
+      } else if (name === 'personal' && this.$route.path !== '/users') {
+        this.$router.push('/users')
       }
+    },
+    goCertification () {
+      this.modal1 = true
+    },
+    ok (name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          this.getDlauth(this.formInline)
+        } else {
+        }
+      })
+    },
+    cancel () {
+    },
+    async getDlauth (formInline) {
+      const { data: res } = await this.$http.post('dlauth', formInline)
+      if (res.status !== 0) return this.$Message.error(res.content)
+      this.isRealName = true
+      this.$Message.info(res.content)
+    },
+    getChildVal (val) {
+      this.userinfo = val
     }
   }
 }

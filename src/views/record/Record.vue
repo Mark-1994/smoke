@@ -37,13 +37,16 @@ export default {
         },
         {
           title: '充值方式',
-          key: 'pay_type'
+          key: 'pay_type',
+          render: (h, params) => {
+            return h('span', params.row.pay_type === 1 ? '支付宝PC网站支付' : '')
+          }
         },
         {
           title: '充值时间',
           key: 'time',
           render: (h, params) => {
-            return h('span', params.row.time)
+            return h('span', this.$dateFormat(Number(params.row.time + '000')))
           }
         }
       ],

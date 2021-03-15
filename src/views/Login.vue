@@ -178,7 +178,7 @@ export default {
     async getLoginPost (formInline) {
       const { data: res } = await this.$http.post('login', formInline)
       if (res.status !== 0) return this.$Message.error(res.content)
-      this.$router.push('/users')
+      this.$router.push('/home')
     },
     // 注册按钮
     registerPanel (type) {

@@ -1,48 +1,40 @@
 <template>
   <div class="users">
     <Row>
-      <Col>
-        <Button @click="value3 = true" type="primary" ghost>创建链接</Button>
+      <!-- <Col span="6">
+        <Avatar icon="ios-person" size="large" />
+      </Col> -->
+      <Col span="12" offset="6">
+        <List header="基本信息">
+          <ListItem>
+            <Row :style="{ width: '100%' }">
+              <Col span="6">手机号：</Col>
+              <Col span="12">{{ usersInfo.mb }}</Col>
+            </Row>
+          </ListItem>
+          <ListItem>
+            <Row :style="{ width: '100%' }">
+              <Col span="6">昵称：</Col>
+              <Col span="12">{{ usersInfo.nick_name }}</Col>
+            </Row>
+          </ListItem>
+          <ListItem>
+            <Row :style="{ width: '100%' }">
+              <Col span="6">剩余条数：</Col>
+              <Col span="12">{{ usersInfo.coin }}</Col>
+            </Row>
+          </ListItem>
+          <ListItem>
+            <Row :style="{ width: '100%' }">
+              <Col span="6">是否认证通过：</Col>
+              <Col span="12">
+                <span :style="usersInfo.is_verified ? {} : { color: '#fc9215' }">{{ usersInfo.is_verified ? '是' : '否' }}</span>
+              </Col>
+            </Row>
+          </ListItem>
+        </List>
       </Col>
     </Row>
-
-    <Drawer
-      title="创建链接"
-      v-model="value3"
-      width="560"
-      :mask-closable="true"
-      :styles="styles"
-    >
-      <Form ref="formData" :model="formData" :label-colon="true" :rules="ruleCustom" :hide-required-mark="true">
-        <Row :gutter="32">
-          <Col span="12">
-            <FormItem label="分组名" label-position="top" prop="alias">
-              <Input
-                v-model="formData.alias"
-                placeholder="请输入分组名"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <FormItem label="备注" label-position="top" prop="comments">
-          <Input
-            type="textarea"
-            v-model="formData.comments"
-            :rows="4"
-            placeholder="请输入备注"
-          />
-        </FormItem>
-      </Form>
-      <div class="demo-drawer-footer">
-        <Button type="primary" @click="getCreateLink('formData')">提交</Button>
-      </div>
-    </Drawer>
-
-    <Table
-      :columns="columns1"
-      :data="data1"
-      :style="{ marginTop: '16px' }"
-    ></Table>
   </div>
 </template>
 
@@ -50,83 +42,28 @@
 export default {
   name: 'Users',
   created () {
-    this.getLinkList()
+    this.getUsersInfo()
   },
   data () {
     return {
-      value3: false,
-      styles: {
-        height: 'calc(100% - 55px)',
-        overflow: 'auto',
-        paddingBottom: '53px',
-        position: 'static'
-      },
-      formData: {
-        alias: '',
-        comments: ''
-      },
-      ruleCustom: {
-        alias: [
-          { required: true, message: '请填写分组名', trigger: 'blur' }
-        ],
-        comments: [
-          { required: true, message: '请填写备注', trigger: 'blur' }
-        ]
-      },
-      columns1: [
-        {
-          title: '链接ID',
-          key: 'lid'
-        },
-        {
-          title: '分组名',
-          key: 'alias'
-        },
-        {
-          title: '备注',
-          key: 'comments'
-        },
-        {
-          title: '认证成功链接数量',
-          key: 'sn'
-        }
-      ],
-      data1: []
+      usersInfo: {}
     }
   },
   methods: {
-    async getLinkList () {
-      const { data: res } = await this.$http.get('ll')
+    async getUsersInfo () {
+      const { data: res } = await this.$http.get('info')
       if (res.status !== 0) return this.$Message.error(res.content)
-      this.data1 = res.content
+      this.usersInfo = res.content
+      window.localStorage.setItem('usersInfo', JSON.stringify(res.content))
+      this.getChildValue(res.content)
     },
-    getCreateLink (name) {
-      this.$refs[name].validate((valid) => {
-        if (valid) {
-          this.getNewLink(this.formData)
-        } else {
-        }
-      })
-    },
-    async getNewLink (parameter) {
-      const { data: res } = await this.$http.post('newlink', parameter)
-      if (res.status !== 0) return this.$Message.error(res.content)
-      this.value3 = false
-      this.getLinkList()
+    getChildValue (usersInfo) {
+      this.$emit('getChildVal', usersInfo)
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.demo-drawer-footer {
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  border-top: 1px solid #e8e8e8;
-  padding: 10px 16px;
-  text-align: right;
-  background: #fff;
-}
+
 </style>

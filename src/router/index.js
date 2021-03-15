@@ -3,7 +3,9 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Users from '../views/user/Users.vue'
+import Link from '../views/link/Link.vue'
 import Record from '../views/record/Record.vue'
+import Share from '../views/share/Share.vue'
 
 Vue.use(VueRouter)
 
@@ -29,15 +31,25 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: Home,
+    redirect: '/users',
     children: [{
       path: '/users',
       name: 'Users',
       component: Users
     }, {
+      path: '/link',
+      name: 'Link',
+      component: Link
+    }, {
       path: '/record',
       name: 'Record',
       component: Record
     }]
+  },
+  {
+    path: '/share',
+    name: 'Share',
+    component: Share
   }
 ]
 
