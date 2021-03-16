@@ -42,7 +42,12 @@
       :columns="columns1"
       :data="data1"
       :style="{ marginTop: '16px' }"
-    ></Table>
+    >
+      <template slot-scope="{ row }" slot="action">
+        <Button type="primary" size="small" style="margin-right: 5px" @click="copyLink(row.lid)">复制</Button>
+        <Button type="error" size="small" @click="remove(row.lid)">删除</Button>
+      </template>
+    </Table>
   </div>
 </template>
 
@@ -89,6 +94,12 @@ export default {
         {
           title: '认证成功链接数量',
           key: 'sn'
+        },
+        {
+          title: '操作',
+          slot: 'action',
+          width: 150,
+          align: 'center'
         }
       ],
       data1: []
@@ -113,6 +124,32 @@ export default {
       if (res.status !== 0) return this.$Message.error(res.content)
       this.value3 = false
       this.getLinkList()
+    },
+    remove (lid) {
+      this.$Modal.confirm({
+        title: '删除链接',
+        content: '您确定要删除链接吗？',
+        loading: true,
+        onOk: () => {
+          this.getDeleteLink(lid)
+        }
+      })
+    },
+    async getDeleteLink (id) {
+      const { data: res } = await this.$http.get('delink?id=' + id)
+      if (res.status !== 0) return this.$Message.error(res.content)
+      this.$Modal.remove()
+      this.getLinkList()
+    },
+    copyLink (lid) {
+      const input = document.createElement('input')
+      document.body.appendChild(input)
+      input.setAttribute('value', window.location.origin + '/#/share?aid=' + lid)
+      input.select()
+      if (document.execCommand('copy')) {
+        document.execCommand('copy')
+      }
+      document.body.removeChild(input)
     }
   }
 }

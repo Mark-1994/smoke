@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div :style="{ position: 'fixed', backgroundColor: '#464c59', top: '0', left: '0', zIndex: 999, color: '#fff', width: '100%', textAlign: 'center', lineHeight: '36px' }" v-if="!isRealName">
+    <div :style="{ position: 'fixed', backgroundColor: '#464c59', top: '0', left: '0', zIndex: 999, color: '#fff', width: '100%', textAlign: 'center', lineHeight: '36px' }" v-if="!userinfo.is_verified">
       <Icon type="ios-warning" color="#f83" />
       为保证您的账户及资源的安全，建议您优先完成实名认证。
       <Button type="text" ghost :style="{ color: '#39f' }" @click="goCertification">去认证</Button>
@@ -23,7 +23,7 @@
         </Form>
       </Modal>
     </div>
-    <Layout :style="!isRealName ? { paddingTop: '36px' } : {}">
+    <Layout :style="!userinfo.is_verified ? { paddingTop: '36px' } : {}">
       <Sider
         ref="side1"
         hide-trigger
@@ -138,7 +138,6 @@ export default {
           { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '身份证号格式不正确', trigger: 'blur' }
         ]
       },
-      isRealName: false,
       userinfo: window.localStorage.getItem('usersInfo') ? JSON.parse(window.localStorage.getItem('usersInfo')) : {}
     }
   },
@@ -177,8 +176,11 @@ export default {
     async getDlauth (formInline) {
       const { data: res } = await this.$http.post('dlauth', formInline)
       if (res.status !== 0) return this.$Message.error(res.content)
-      this.isRealName = true
-      this.$Message.info(res.content)
+      if (res.content !== 0) {
+        this.$Message.info('匹配')
+      } else {
+        this.$Message.info('不匹配')
+      }
     },
     getChildVal (val) {
       this.userinfo = val

@@ -12,6 +12,16 @@ Vue.use(VueParticles)
 
 axios.defaults.baseURL = 'http://api.npm.link/'
 axios.defaults.withCredentials = true
+axios.interceptors.response.use(data => {
+  if (data.data.status === 4) {
+    router.push('/login')
+  }
+  return data
+})
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title ? to.meta.title : 'smoke'
+  next()
+})
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false

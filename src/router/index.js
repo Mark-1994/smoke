@@ -6,6 +6,7 @@ import Users from '../views/user/Users.vue'
 import Link from '../views/link/Link.vue'
 import Record from '../views/record/Record.vue'
 import Share from '../views/share/Share.vue'
+import notFound from '../views/notFound/notFound.vue'
 
 Vue.use(VueRouter)
 
@@ -25,7 +26,10 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    meta: {
+      title: 'smoke-会员登录'
+    }
   },
   {
     path: '/home',
@@ -44,12 +48,23 @@ const routes = [
       path: '/record',
       name: 'Record',
       component: Record
+    }, {
+      path: '/404',
+      name: 'notFound',
+      component: notFound,
+      meta: {
+        title: '404'
+      }
     }]
   },
   {
     path: '/share',
     name: 'Share',
     component: Share
+  },
+  {
+    path: '*',
+    redirect: '/404'
   }
 ]
 
