@@ -24,7 +24,7 @@
               </Col>
               <Col span="9">
                 <div class="code-box" @click="updateNum(0)">
-                  <img :src="'http://api.npm.link/code?r=' + num" alt="">
+                  <img :src="'http://test1.qijan.cn/code?r=' + num" alt="">
                 </div>
               </Col>
             </Row>
@@ -53,6 +53,20 @@
               <Icon type="ios-lock-outline" slot="prefix"></Icon>
             </Input>
           </FormItem>
+          <FormItem prop="icode">
+            <Row :gutter="8">
+              <Col span="15">
+                <Input type="text" v-model="formRegister.icode" placeholder="请输入验证码">
+                  <Icon type="ios-apps-outline" slot="prefix"></Icon>
+                </Input>
+              </Col>
+              <Col span="9">
+                <div class="code-box" @click="updateNum(1)">
+                  <img :src="'http://test1.qijan.cn/code?r=' + numRegister" alt="">
+                </div>
+              </Col>
+            </Row>
+          </FormItem>
           <FormItem prop="code">
             <Row :gutter="8">
               <Col span="15">
@@ -63,20 +77,6 @@
               <Col span="9">
                 <Button long @click="getCode" v-if="!countDown">获取验证码</Button>
                 <Button long v-else>已发送 {{ countDownTime }}S</Button>
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem prop="icode">
-            <Row :gutter="8">
-              <Col span="15">
-                <Input type="text" v-model="formRegister.icode" placeholder="请输入验证码">
-                  <Icon type="ios-apps-outline" slot="prefix"></Icon>
-                </Input>
-              </Col>
-              <Col span="9">
-                <div class="code-box" @click="updateNum(1)">
-                  <img :src="'http://api.npm.link/code?r=' + numRegister" alt="">
-                </div>
               </Col>
             </Row>
           </FormItem>

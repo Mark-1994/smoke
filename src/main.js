@@ -10,7 +10,7 @@ import axios from 'axios'
 Vue.use(ViewUI)
 Vue.use(VueParticles)
 
-axios.defaults.baseURL = 'http://api.npm.link/'
+axios.defaults.baseURL = 'http://test1.qijan.cn/'
 axios.defaults.withCredentials = true
 axios.interceptors.response.use(data => {
   if (data.data.status === 4) {

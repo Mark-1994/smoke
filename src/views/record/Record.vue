@@ -8,12 +8,12 @@
           title="代理充值"
           @on-ok="ok"
           @on-cancel="cancel">
-          <Table border ref="selection" :columns="columns2" :data="data2" size="small"></Table>
+          <Table border ref="selection" :columns="columns2" :data="data2" size="small" :loading="isLoadingMoney"></Table>
         </Modal>
       </Col>
     </Row>
 
-    <Table :columns="columns1" :data="data1" :style="{ marginTop: '16px' }"></Table>
+    <Table :columns="columns1" :data="data1" :style="{ marginTop: '16px' }" :loading="isLoading"></Table>
   </div>
 </template>
 
@@ -84,24 +84,26 @@ export default {
           }
         },
         {
-          title: 'id',
-          key: 'id'
-        },
-        {
           title: '金额',
-          key: 'rmb'
+          key: 'rmb',
+          render: (h, params) => {
+            return h('span', '￥' + params.row.rmb)
+          }
         },
         {
-          title: '积分',
+          title: '条数',
           key: 'coin'
         }
       ],
-      data2: []
+      data2: [],
+      isLoading: true,
+      isLoadingMoney: true
     }
   },
   methods: {
     async getRechargeRecord () {
       const { data: res } = await this.$http.get('rlogs')
+      this.isLoading = false
       if (res.status !== 0) return this.$Message.error(res.content)
       this.data1 = res.content ? res.content : []
     },
@@ -112,8 +114,9 @@ export default {
     },
     async getRechargeList () {
       const { data: res } = await this.$http.get('rcl')
+      this.isLoadingMoney = false
       if (res.status !== 0) return this.$Message.error(res.content)
-      this.data2 = res.content
+      this.data2 = res.content ? res.content : []
     },
     async getPay (id) {
       const { data: res } = await this.$http.get('rcg?id=' + id)

@@ -32,20 +32,24 @@
         v-model="isCollapsed"
       >
         <div class="layout-logo">
-          <a href="javascript:;">
+          <router-link to="/users">
             <img src="../assets/images/f7e0cec4edf9530202a1b12d6cec9f18_fullsize.jpg" alt="" :style="{ width: '80%', verticalAlign: 'middle' }">
-          </a>
+          </router-link>
         </div>
         <Menu
           theme="dark"
           width="auto"
           :class="menuitemClasses"
         >
-          <MenuItem name="1-1" to="link">
+          <MenuItem name="1-1" to="client">
+            <Icon type="ios-contact"></Icon>
+            <span>用户列表</span>
+          </MenuItem>
+          <MenuItem name="2-1" to="link">
             <Icon type="ios-link"></Icon>
             <span>链接列表</span>
           </MenuItem>
-          <MenuItem name="2-1" to="record">
+          <MenuItem name="3-1" to="record">
             <Icon type="ios-list-box-outline"></Icon>
             <span>充值记录</span>
           </MenuItem>
@@ -177,13 +181,20 @@ export default {
       const { data: res } = await this.$http.post('dlauth', formInline)
       if (res.status !== 0) return this.$Message.error(res.content)
       if (res.content !== 0) {
-        this.$Message.info('匹配')
+        this.$Message.info('认证成功')
+        this.getUsersInfo()
       } else {
-        this.$Message.info('不匹配')
+        this.$Message.error('认证失败')
       }
     },
     getChildVal (val) {
       this.userinfo = val
+    },
+    async getUsersInfo () {
+      const { data: res } = await this.$http.get('info')
+      if (res.status !== 0) return this.$Message.error(res.content)
+      window.localStorage.setItem('usersInfo', JSON.stringify(res.content))
+      this.userinfo = JSON.parse(window.localStorage.getItem('usersInfo'))
     }
   }
 }

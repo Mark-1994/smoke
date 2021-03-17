@@ -90,6 +90,7 @@ export default {
       this.modal6 = true
     },
     asyncOK (name) {
+      this.loading = false
       this.$refs[name].validate((valid) => {
         if (valid) {
           this.getEditNickName(this.formItem.nickname)
@@ -98,6 +99,7 @@ export default {
       })
     },
     async getEditNickName (nickname) {
+      this.loading = true
       const { data: res } = await this.$http.get('update_nickname?nickname=' + nickname)
       if (res.status !== 0) return this.$Message.error(res.content)
       this.modal6 = false

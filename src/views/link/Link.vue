@@ -42,12 +42,18 @@
       :columns="columns1"
       :data="data1"
       :style="{ marginTop: '16px' }"
+      :loading="isLoading"
     >
       <template slot-scope="{ row }" slot="action">
-        <Button type="primary" size="small" style="margin-right: 5px" @click="copyLink(row.lid)">复制</Button>
+        <Button type="info" size="small" style="margin-right: 5px;" @click="showAuthenticationLogs(row.lid)">查询</Button>
+        <Button type="primary" size="small" style="margin-right: 5px;" @click="copyLink(row.lid)">复制</Button>
         <Button type="error" size="small" @click="remove(row.lid)">删除</Button>
       </template>
     </Table>
+
+    <Modal v-model="modal12" draggable scrollable title="获取指定链接认证日志" width="680">
+      <Table border :columns="columns2" :data="data2" :loading="isLoadingLogs"></Table>
+    </Modal>
   </div>
 </template>
 
@@ -98,18 +104,52 @@ export default {
         {
           title: '操作',
           slot: 'action',
-          width: 150,
+          width: 190,
           align: 'center'
         }
       ],
-      data1: []
+      data1: [],
+      // 表格 加载中
+      isLoading: true,
+      modal12: false,
+      columns2: [
+        {
+          title: '姓名',
+          key: 'name'
+        },
+        {
+          title: '手机号',
+          key: 'mb'
+        },
+        {
+          title: '身份证号',
+          key: 'id_card'
+        },
+        {
+          title: '是否认证通过',
+          key: 'is_verified',
+          render: (h, params) => {
+            return h('span', params.row.is_verified ? '是' : '否')
+          }
+        },
+        {
+          title: '认证时间',
+          key: 'time',
+          render: (h, params) => {
+            return h('span', this.$dateFormat(params.row.time))
+          }
+        }
+      ],
+      data2: [],
+      isLoadingLogs: true
     }
   },
   methods: {
     async getLinkList () {
       const { data: res } = await this.$http.get('ll')
+      this.isLoading = false
       if (res.status !== 0) return this.$Message.error(res.content)
-      this.data1 = res.content
+      this.data1 = res.content ? res.content : []
     },
     getCreateLink (name) {
       this.$refs[name].validate((valid) => {
@@ -150,6 +190,17 @@ export default {
         document.execCommand('copy')
       }
       document.body.removeChild(input)
+    },
+    showAuthenticationLogs (lid) {
+      this.modal12 = true
+      this.getAuthenticationLogs(lid)
+    },
+    async getAuthenticationLogs (lid) {
+      this.isLoadingLogs = true
+      const { data: res } = await this.$http.get('llog?lid=' + lid)
+      this.isLoadingLogs = false
+      if (res.status !== 0) return this.$Message.error(res.content)
+      this.data2 = res.content ? res.content : []
     }
   }
 }

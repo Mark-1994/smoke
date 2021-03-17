@@ -12,17 +12,6 @@
           <FormItem label="手机号" prop="mb">
             <Input v-model="formInline.mb" placeholder="请输入手机号"></Input>
           </FormItem>
-          <FormItem label="短信验证码" prop="code">
-            <Row :gutter="8">
-              <Col span="16">
-                <Input v-model="formInline.code" placeholder="请输入验证码"></Input>
-              </Col>
-              <Col span="8">
-                <Button long @click="getAuthCode" v-if="isSend">获取验证码</Button>
-                <Button long v-else>已发送 {{ countDownTime }}S</Button>
-              </Col>
-            </Row>
-          </FormItem>
           <FormItem label="图形验证码" prop="icode">
             <Row :gutter="8">
               <Col span="16">
@@ -32,6 +21,17 @@
                 <div class="code-box" @click="getImagesCode">
                   <img :src="'http://api.npm.link/code?r=' + numRegister" alt="">
                 </div>
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem label="短信验证码" prop="code">
+            <Row :gutter="8">
+              <Col span="16">
+                <Input v-model="formInline.code" placeholder="请输入验证码"></Input>
+              </Col>
+              <Col span="8">
+                <Button long @click="getAuthCode" v-if="isSend">获取验证码</Button>
+                <Button long v-else>已发送 {{ countDownTime }}S</Button>
               </Col>
             </Row>
           </FormItem>

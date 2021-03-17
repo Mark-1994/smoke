@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Users from '../views/user/Users.vue'
+import Client from '../views/client/Client.vue'
 import Link from '../views/link/Link.vue'
 import Record from '../views/record/Record.vue'
 import Share from '../views/share/Share.vue'
@@ -41,6 +42,10 @@ const routes = [
       name: 'Users',
       component: Users
     }, {
+      path: '/client',
+      name: 'Client',
+      component: Client
+    }, {
       path: '/link',
       name: 'Link',
       component: Link
@@ -60,7 +65,10 @@ const routes = [
   {
     path: '/share',
     name: 'Share',
-    component: Share
+    component: Share,
+    meta: {
+      title: 'smoke-用户认证'
+    }
   },
   {
     path: '*',
