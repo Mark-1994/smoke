@@ -17,12 +17,12 @@
           </Input>
         </FormItem>
         <FormItem prop="receipt">
-          <Input type="text" v-model="formInline.receipt" placeholder="回执单号">
+          <Input type="text" v-model="formInline.receipt" placeholder="回执单号" v-throttle>
             <Icon type="ios-clipboard-outline" slot="prepend"></Icon>
           </Input>
         </FormItem>
         <FormItem>
-          <Button type="primary" icon="ios-search" @click="handleSubmit('formInline')">搜索</Button>
+          <Button type="primary" icon="ios-search" @click="handleSubmit('formInline')" :loading="isSearch">搜索</Button>
         </FormItem>
     </Form>
     <Table :columns="columns1" :data="data1" :loading="isLoading"></Table>
@@ -59,6 +59,24 @@ export default {
           key: 'is_verified',
           render: (h, params) => {
             return h('span', params.row.is_verified ? '是' : '否')
+          },
+          filters: [
+            {
+              label: '认证成功',
+              value: 1
+            },
+            {
+              label: '认证失败',
+              value: 0
+            }
+          ],
+          filterMultiple: false,
+          filterMethod (value, row) {
+            if (value) {
+              return row.is_verified === true
+            } else {
+              return row.is_verified === false
+            }
           }
         },
         {
@@ -84,7 +102,8 @@ export default {
         receipt: ''
       },
       ruleInline: {},
-      isLoading: true
+      isLoading: true,
+      isSearch: false
     }
   },
   methods: {
@@ -104,8 +123,10 @@ export default {
     },
     async getUserSearch (params) {
       this.isLoading = true
+      this.isSearch = true
       const { data: res } = await this.$http.get(`search?idcard=${params.idcard}&name=${params.name}&mb=${params.mb}&receipt=${params.receipt}`)
       this.isLoading = false
+      this.isSearch = false
       if (res.status !== 0) return this.$Message.error(res.content)
       this.data1 = res.content ? res.content : []
     }

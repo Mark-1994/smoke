@@ -119,6 +119,7 @@ export default {
       this.data2 = res.content ? res.content : []
     },
     async getPay (id) {
+      if (!id) return
       const { data: res } = await this.$http.get('rcg?id=' + id)
       if (res.status !== 0) return this.$Message.error(res.content)
       window.open(res.content)

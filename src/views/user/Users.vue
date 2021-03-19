@@ -22,9 +22,10 @@
                   v-model="modal6"
                   title="修改昵称"
                   :loading="loading"
-                  @on-ok="asyncOK('formItem')">
+                  @on-ok="asyncOK('formItem')"
+                  @on-cancel="cancel">
                   <Alert banner show-icon>帐号名一个自然年内仅能修改3次</Alert>
-                  <Form ref="formItem" :model="formItem" :rules="ruleItem" :label-width="80">
+                  <Form ref="formItem" :model="formItem" :rules="ruleItem" :label-width="80" @submit.native.prevent>
                     <FormItem label="新账号名" prop="nickname">
                       <Input type="text" v-model="formItem.nickname"></Input>
                     </FormItem>
@@ -104,6 +105,9 @@ export default {
       if (res.status !== 0) return this.$Message.error(res.content)
       this.modal6 = false
       this.getUsersInfo()
+    },
+    cancel () {
+      // this.$refs.formItem.resetFields()
     }
   }
 }

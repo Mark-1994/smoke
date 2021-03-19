@@ -10,8 +10,9 @@
       title="创建链接"
       v-model="value3"
       width="560"
-      :mask-closable="true"
+      :mask-closable="false"
       :styles="styles"
+      @on-close="resetForm"
     >
       <Form ref="formData" :model="formData" :label-colon="true" :rules="ruleCustom" :hide-required-mark="true">
         <Row :gutter="32">
@@ -32,9 +33,25 @@
             placeholder="请输入备注"
           />
         </FormItem>
+        <FormItem label="标题" label-position="top" prop="title">
+          <Input
+            v-model="formData.title"
+            placeholder="请输入标题"
+          />
+        </FormItem>
+        <FormItem label="说明信息" label-position="top" prop="content">
+          <Input
+            type="textarea"
+            v-model="formData.content"
+            :rows="4"
+            placeholder="请输入说明信息"
+            show-word-limit
+            maxlength="2000"
+          />
+        </FormItem>
       </Form>
       <div class="demo-drawer-footer">
-        <Button type="primary" @click="getCreateLink('formData')">提交</Button>
+        <Button type="primary" @click="getCreateLink('formData')" :loading="isLoadingLink">提交</Button>
       </div>
     </Drawer>
 
@@ -74,7 +91,9 @@ export default {
       },
       formData: {
         alias: '',
-        comments: ''
+        comments: '',
+        title: '',
+        content: ''
       },
       ruleCustom: {
         alias: [
@@ -82,7 +101,11 @@ export default {
         ],
         comments: [
           { required: true, message: '请填写备注', trigger: 'blur' }
-        ]
+        ],
+        title: [
+          { required: true, message: '请填写标题', trigger: 'blur' }
+        ],
+        content: []
       },
       columns1: [
         {
@@ -99,7 +122,8 @@ export default {
         },
         {
           title: '认证成功链接数量',
-          key: 'sn'
+          key: 'sn',
+          sortable: true
         },
         {
           title: '操作',
@@ -141,7 +165,8 @@ export default {
         }
       ],
       data2: [],
-      isLoadingLogs: true
+      isLoadingLogs: true,
+      isLoadingLink: false
     }
   },
   methods: {
@@ -160,9 +185,12 @@ export default {
       })
     },
     async getNewLink (parameter) {
+      this.isLoadingLink = true
       const { data: res } = await this.$http.post('newlink', parameter)
+      this.isLoadingLink = false
       if (res.status !== 0) return this.$Message.error(res.content)
       this.value3 = false
+      this.$refs.formData.resetFields()
       this.getLinkList()
     },
     remove (lid) {
@@ -201,6 +229,9 @@ export default {
       this.isLoadingLogs = false
       if (res.status !== 0) return this.$Message.error(res.content)
       this.data2 = res.content ? res.content : []
+    },
+    resetForm () {
+      this.$refs.formData.resetFields()
     }
   }
 }

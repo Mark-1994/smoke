@@ -14,7 +14,7 @@ module.exports = {
   // 是否在开发环境下通过 eslint-loader 在每次保存时 lint 代码
   lintOnSave: true,
   // 是否需要生产环境的 source map
-  productionSourceMap: true,
+  productionSourceMap: false,
   // 是否为 CSS 开启 source map
   css: {
     sourceMap: false

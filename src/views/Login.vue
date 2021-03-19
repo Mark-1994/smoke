@@ -53,6 +53,11 @@
               <Icon type="ios-lock-outline" slot="prefix"></Icon>
             </Input>
           </FormItem>
+          <FormItem prop="passwdBranch">
+            <Input type="password" v-model="formRegister.passwdBranch" placeholder="确认密码">
+              <Icon type="ios-lock-outline" slot="prefix"></Icon>
+            </Input>
+          </FormItem>
           <FormItem prop="icode">
             <Row :gutter="8">
               <Col span="15">
@@ -101,6 +106,13 @@ export default {
     clearInterval(this.timer)
   },
   data () {
+    const validatePassCheck = (rule, value, callback) => {
+      if (value !== this.formRegister.passwd) {
+        callback(new Error('两次输入的密码不匹配！'))
+      } else {
+        callback()
+      }
+    }
     return {
       formInline: {
         mb: '',
@@ -110,6 +122,7 @@ export default {
       formRegister: {
         mb: '',
         passwd: '',
+        passwdBranch: '',
         code: '',
         icode: ''
       },
@@ -137,6 +150,10 @@ export default {
         ],
         code: [
           { required: true, message: '请填写验证码', trigger: 'blur' }
+        ],
+        passwdBranch: [
+          { required: true, message: '请填写确认密码', trigger: 'blur' },
+          { validator: validatePassCheck, trigger: 'blur' }
         ]
       },
       // 登录图形验证码 随机数
@@ -235,7 +252,7 @@ export default {
     transform: translate(-50%, -50%);
     background-color: rgba(255, 255, 255, .5);
     width: 500px;
-    height: 400px;
+    height: 450px;
     box-sizing: border-box;
     padding: 0 50px;
     border-radius: 5px;
